@@ -1,0 +1,174 @@
+---
+title: "Problem Set 01"
+author: Your Name
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: 
+  html_document:
+    keep_md: false
+    theme: yeti
+    highlight: textmate
+    code_folding: show
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+# Uncomment below to produce .pdf
+#   pdf_document:
+#     latex_engine: xelatex
+#     keep_tex: false ## Change to true if want keep intermediate .tex file
+#     toc: true
+#     toc_depth: 3
+#     dev: cairo_pdf
+# knit: (function(inputFile, encoding) {
+#  rmarkdown::render(inputFile, encoding = encoding,
+#  output_format = 'all')
+#  })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+```{css echo=FALSE}
+h1  {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+h4  {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+``` 
+
+# Task 1
+
+Specify a vector with numeric elements 1 and 3 and a character element "c".
+
+What type will the resulting object be?
+
+Check your intuition with R.
+
+```{r}
+
+```
+
+# Task 2
+
+Create a named list containing a data frame, a character vector and a list. Access the 
+first element of the first element and the second element.
+
+```{r}
+  
+```
+
+# Task 3
+ 
+Assign the name "x" to an integer vector from 1 to 10. 
+
+Create a logical vector "z" whose elements store whether x is greater than 2 and less than 8.
+
+Compute the number of times the above condition is true (use `sum()`).
+
+```{r}
+
+```
+
+
+# Task 4
+
+Given the data frame below, create a new column called "c" that contains the 
+product of "a" and "b". Do this using `$` and `[` indexing (and maybe `names()`).
+Remember, data frames are (special) lists! 
+
+
+```{r}
+df <- data.frame(
+  a = c(1,1,2,3,4),
+  b = c(3,2,2,4,5)
+)
+
+```
+
+Your solution:
+
+```{r}
+
+```
+
+# Task 5
+
+In this task, you will learn a few important functions in base R.
+
+#### 1. Sequences
+
+Often, you want to create sequences of objects.
+
+You can do so using the `rep()` function:
+
+```{r}
+x <- c(1,2,3)
+rep(x, 3)
+
+rep(x, each = 3)
+```
+
+Another way of creating sequences is `seq()`:
+
+```{r}
+seq(1, 5)
+1:5
+seq(1,5, by = 2)
+```
+
+#### 2. Manipulating Strings
+
+You should also know some basic string manipulations from the beginning.
+
+With `paste()` you can concatenate strings:
+
+```{r}
+x <- "a"
+
+paste(x, 3)
+
+paste(3, x)
+
+paste(3, x, sep = "")
+
+```
+
+Can you spot the difference to `paste0()`?
+
+```{r}
+paste0(3, x)
+```
+
+#### 3. Classic (math) functions
+
+Some very basic (math) functions: `sqrt()`, `exp()`, `log()`, `abs()`, `sum()`, `max()`, `min()`,
+`length()` (length of an r object).
+
+#### TASK:
+
+Create a character vector with 20 elements: "1st element", "2nd element", 
+"3rd element", "4th element", etc.
+
+```{r}
+
+```
+
+# Task 6
+
+Write a function to compute the mean of a vector. Of course, without using the 
+`mean()` function.
+
+Define a vector you want to test your function on and specify the expected result:
+```{r}
+
+```
+
+Write the function and test it:
+
+```{r}
+
+```

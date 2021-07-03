@@ -1,0 +1,128 @@
+---
+title: "Homework"
+author: Your Name
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: 
+  html_document:
+    keep_md: false
+    theme: cosmo
+    highlight: textmate
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+# Uncomment below to produce .pdf
+#   pdf_document:
+#     latex_engine: xelatex
+#     keep_tex: false ## Change to true if want keep intermediate .tex file
+#     toc: true
+#     toc_depth: 3
+#     dev: cairo_pdf
+# knit: (function(inputFile, encoding) {
+#  rmarkdown::render(inputFile, encoding = encoding,
+#  output_format = 'all')
+#  })
+---
+
+```{r setup, include=FALSE}
+
+# install package management tool pacman
+# install.packages("pacman")
+
+# You can add more packages if you want (but you don' need to)!
+
+pacman::p_load(
+  tidyverse,
+  rio,
+  knitr,
+  here
+  )
+```
+
+
+```{r, include=FALSE}
+knitr::opts_knit$set(root.dir = normalizePath('../'))
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+
+# A Shoddy Survey Company
+
+## Prologue 
+
+Finally. The survey company you hired (Survey Company International) just mailed you the raw data.<sup>[1]<sup/>
+
+You came a long way. You secured funding for your research project/thesis, presented it to your
+supervisors, you did a systematic review, wrote the theory section, and designed the
+questionnaire. 
+
+Now, the exciting part begins. 
+
+You unzip the folder and there it is, the precious file you need so desperately...
+
+```{r, echo=FALSE, fig.align='center', out.width= "10%"}
+knitr::include_graphics(here("Figures/xlsx.png"))
+```
+
+... In `.xlsx`. "Huh?" You asked explicitly for a more robust file type.
+
+But, alas, maybe they mis-read the e-mail and atleast it's not stored in 
+[`.xls`](https://www.bbc.com/news/technology-54423988). 
+
+"Thanks to R's extensive importing 
+capabilities, that's no issue at all," you say to yourself. 
+
+"It's not like they messed up data collection, it's just stored as .xlsx". 
+
+You click on the file.
+
+"Nevermind."
+
+<br/>
+
+```{r, echo=FALSE, fig.align='center', out.width= "90%"}
+knitr::include_graphics(here("Figures/data.png"))
+```
+
+<br/>
+
+<sup>[1]<sup/> Name made up.
+
+## Some notes on the data
+
+- $N = 500$
+    
+- This is not a real data set. It was simulated with R.
+
+- It's a "panel" survey consisting of three waves in April, May, and June.
+
+- "id_x" is the respondent identfier.
+
+- The survey consists of two questions named q1 and q2.
+
+# Tasks
+
+1. Read-in the data.
+
+2. Tidy the data.
+
+3. For each date, calculate the mean of q1 and q2.
+
+4. Manually generate a frequency table for q1 and q2, grouped by date.
+
+If you put out your document to `html`, explore `DT::datatable()` for some 
+interactivity!
+
+You do not need to manually manipulate the Excel file to complete these tasks.
+
+## Hints
+
+Look up `?rio::import_list`.
+
+You will likely practice a key skill for your carrer as empirical researcher/
+data scientist: googling. That's normal!
+
+# Start Wrangling!
+
+```{r}
+
+```
