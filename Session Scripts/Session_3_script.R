@@ -27,7 +27,7 @@ pacman::p_load(
 
 )
 
-# ------------------------------------------------------------------------------
+# The Philosophy: Tidy Data ----------------------------------------------------
 
 lotr <- data.frame(
   race = c("hobbits", "hobbits", "elves", "hobbits", "dwarves", "men"),
@@ -51,13 +51,13 @@ as.data.frame(lotr)
 
 
 
-# ------------------------------------------------------------------------------
+# Tibbles ----------------------------------------------------------------------
 
 as_tibble(lotr)
-# Hint: You can create one just like data frames but with tibble().
+# Hint: You can create tibbles just like data frames but with tibble().
 
 
-# ------------------------------------------------------------------------------
+# Importing/Exporting Data -----------------------------------------------------
 
 # install.packages("rio")
 
@@ -74,10 +74,6 @@ W <- import("mtcars.csv")
 X <- import("mtcars.rds")
 Y <- import("mtcars.dta")
 Z <- import("mtcars.json")
-
-
-
-## -----------------------------------------------------------------------------
 
 # Exporting/importing several data frames: export_list()/import_list()
 
@@ -96,7 +92,7 @@ Z <- import_list(dir(pattern = "csv$"))
 # In this case, all files that end with csv ($ matches the end of the string).[1]
 
 
-# ------------------------------------------------------------------------------
+# Pipes: %>% and |> ------------------------------------------------------------
 
 x <- c(1, 2, 3, 4)
 
@@ -107,43 +103,29 @@ x %>%
   sqrt()
 
 
-# ------------------------------------------------------------------------------
-
 "Ceci n&#37;est pas une pipe" %>% gsub("&#37;", "'", .)
 # gsub() performs replacement of all matches in a chr. vector.
 
 
-# ------------------------------------------------------------------------------
-
 x |>
-  mean() |>
-  sqrt()
+mean() |>
+sqrt()
 
-
-# ------------------------------------------------------------------------------
 
 Sys.setenv("_R_USE_PIPEBIND_" = "true")
 "Ceci n&#37;est pas une pipe" |> . => gsub("&#37;", "'", .)
 
 
 
-# ------------------------------------------------------------------------------
+# The Data ---------------------------------------------------------------------
 
 parlgov_elec <- import("http://www.parlgov.org/static/data/development-cp1252/view_election.csv")
 
 
-# ------------------------------------------------------------------------------
-
 glimpse(parlgov_elec) # enhanced version of str()
 
 
-# ------------------------------------------------------------------------------
-
-
 head(parlgov_elec, 10)
-
-
-# ------------------------------------------------------------------------------
 
 # datasummary_skim(parlgov_elec) # from modelsummary package. Set 
 # type = "categorical" for character vars.
@@ -153,24 +135,18 @@ head(parlgov_elec, 10)
 datasummary_skim(parlgov_elec)
 
 
-# ------------------------------------------------------------------------------
+# Filtering Rows ---------------------------------------------------------------
 
 parlgov_elec_de <- parlgov_elec %>% # add, e.g., _de if we want to keep our original df 
   filter(country_name_short == "DEU")
 
-
-# ------------------------------------------------------------------------------
-
-datasummary_skim(parlgov_elec_de$election_type, type = "categorical")
-
-# ------------------------------------------------------------------------------
 
 parlgov_elec_de %>% # add, e.g., _de if we want to keep our original df
   filter(party_name_short == "SPD", election_type == "parliament") %>%
   mean(vote_share)
 
 
-# ------------------------------------------------------------------------------
+# pull() -----------------------------------------------------------------------
 
 parlgov_elec_de %>% # add, e.g., _de if we want to keep our original df
   filter(party_name_short == "SPD", election_type == "parliament") %>%
@@ -178,40 +154,39 @@ parlgov_elec_de %>% # add, e.g., _de if we want to keep our original df
   mean()
 
 
-# ------------------------------------------------------------------------------
+# summarise() ------------------------------------------------------------------
 
 parlgov_elec_de %>%
   filter(party_name_short == "SPD", election_type == "parliament") %>%
   summarise(mean(vote_share)) # summarise() takes summary functions such as mean(), sd(), etc.
 
 
-# ------------------------------------------------------------------------------
-
 parlgov_elec_de %>%
   filter(party_name_short == "SPD", election_type == "parliament") %>%
   summarise(mean = mean(vote_share), sd = sd(vote_share), n = n())
 
-# Aside: you can also get the number of rows (in a group) by usining the base 
+# Aside: you can also get the number of rows (in a group) by using the base 
 # function nrow(.) with a placeholder in the above pipe.
 
 
-# ------------------------------------------------------------------------------
+# mutate() ---------------------------------------------------------------------
 
 parlgov_elec_de <- parlgov_elec_de %>% # here, we "overwrite" our df
   mutate(year = lubridate::year(election_date))
 
 
 
-# ------------------------------------------------------------------------------
+# select() and arrange() -------------------------------------------------------
 
 parlgov_elec_de %>%
   filter(year == 2017) %>%
   select(party_name_short, vote_share, left_right) %>% 
-  arrange(desc(left_right)) #default is ascending; we can wrap the masked vector with desc() to sort descending
+  arrange(desc(left_right)) #default is ascending; we can wrap the masked vector 
+  # with desc() to sort descending
 
 
 
-# ------------------------------------------------------------------------------
+# group_by() -------------------------------------------------------------------
 
 parlgov_elec %>%
   filter(election_type == "parliament") %>% 
@@ -224,16 +199,11 @@ parlgov_elec %>%
 
 
 
-# ------------------------------------------------------------------------------
-
 parlgov_elec <- parlgov_elec %>%
-  group_by(country_id) %>% 
-  mutate(max_seats = max(seats_total)) %>% 
+  group_by(country_id) %>%
+  mutate(max_seats = max(seats_total)) %>%
   ungroup() # to remove the grouping
 
-
-
-# ------------------------------------------------------------------------------
 
 parlgov_elec %>%
   filter(seats_total == max_seats) %>%
@@ -241,7 +211,7 @@ parlgov_elec %>%
   distinct() # select distinct rows
 
 
-# ------------------------------------------------------------------------------
+# forcats ----------------------------------------------------------------------
 
 parlgov_elec_de %>%
   mutate(election_type = fct_recode(election_type, # Coerces the type automatically from chr to fct.
@@ -252,13 +222,11 @@ parlgov_elec_de %>%
 
 
 
-# ------------------------------------------------------------------------------
+# if_else() and case_when() ----------------------------------------------------
 
 parlgov_elec_de <- parlgov_elec_de %>%
   mutate(family = if_else(left_right > 5, "right", "left"))
 
-
-# ------------------------------------------------------------------------------
 
 parlgov_elec_de <- parlgov_elec_de %>%
   mutate(family = case_when(
@@ -268,7 +236,7 @@ parlgov_elec_de <- parlgov_elec_de %>%
     left_right >= 7.5 ~ "right"))
 
 
-# ------------------------------------------------------------------------------
+# pivot_wider() and pivot_longer() ---------------------------------------------
 
 wide <- parlgov_elec_de %>%
   filter(election_type == "parliament", vote_share >= 5, year(election_date) >= 1945) %>%
@@ -277,7 +245,6 @@ wide <- parlgov_elec_de %>%
 
 wide
 
-# ------------------------------------------------------------------------------
 
 long <- wide %>%
   pivot_longer(!election_date, names_to = "party_name_short", values_to = "vote_share") %>%
@@ -286,7 +253,7 @@ long <- wide %>%
 head(long)
 
 
-# ------------------------------------------------------------------------------
+# joins ------------------------------------------------------------------------
 
 parlgov_party <- rio::import("http://www.parlgov.org/static/data/development-utf-8/view_party.csv")
 
@@ -295,14 +262,13 @@ l_joined <- left_join(parlgov_elec_de, parlgov_party, by = "party_id")
 head(l_joined)
 
 
-# ------------------------------------------------------------------------------
 
 l_joined <- left_join(parlgov_elec_de, parlgov_party)
 
 head(l_joined)
 
 
-# ------------------------------------------------------------------------------
+# data.table -------------------------------------------------------------------
 
 parlgov_elec_de %>% # add, e.g., _de if we want to keep our original df
   filter(party_name_short == "SPD") %>%
