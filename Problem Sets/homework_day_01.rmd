@@ -60,7 +60,7 @@ Now, the exciting part begins.
 You unzip the folder, and there it is, the precious file you need so desperately...
 
 ```{r, echo=FALSE, fig.align='center', out.width= "10%"}
-knitr::include_graphics(here("Figures/xlsx.png"))
+knitr::include_graphics(here("Figures", "xlsx.png"))
 ```
 
 ... In `.xlsx`. "Huh?" You asked explicitly for a more robust file type.
@@ -80,7 +80,7 @@ You click on the file.
 <br/>
 
 ```{r, echo=FALSE, fig.align='center', out.width= "90%"}
-knitr::include_graphics(here("Figures/data.png"))
+knitr::include_graphics(here("Figures", "data.png"))
 ```
 
 <br/>
@@ -118,7 +118,7 @@ You do not need to manipulate the Excel file manually to complete these tasks.
 
 Look up `?rio::import_list` and the `here` package. I normalized the directory in the
 `knitr` setup of this `.Rmd` file such that relative file paths from the project root
-should work.
+should work (but this depends on the OS).
 
 You will likely practice a key skill for your career as empirical researcher/
 data scientist: googling. That's normal!

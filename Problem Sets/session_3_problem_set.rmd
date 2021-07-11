@@ -34,7 +34,8 @@ pacman::p_load(
   tidyverse,
   rio,
   modelsummary,
-  knitr
+  knitr,
+  here
 )
 
 ```
@@ -49,7 +50,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 ```{r}
 # The .csv would've had 200mb; .parquet is under  1mb. The power of compression.
-unvotes <- rio::import("Data/unvotes.parquet")
+unvotes <- rio::import(here("Data", "unvotes.parquet"))
 
 ```
 

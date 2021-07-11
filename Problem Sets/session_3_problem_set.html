@@ -263,7 +263,7 @@ div.tocify {
 
 
 <pre class="r"><code># The .csv would&#39;ve had 200mb; .parquet is under  1mb. The power of compression.
-unvotes &lt;- rio::import(&quot;Data/unvotes.parquet&quot;)</code></pre>
+unvotes &lt;- rio::import(here(&quot;Data&quot;, &quot;unvotes.parquet&quot;))</code></pre>
 <div id="data-wrangling-un-votes" class="section level1">
 <h1>Data Wrangling UN Votes</h1>
 <p>In this problem set, we will use data from the <a href="https://github.com/dgrtwo/unvotes">unvotes</a> package. It contains data for all countries voting history in the general assembly.</p>

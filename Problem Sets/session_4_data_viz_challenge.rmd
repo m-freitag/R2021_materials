@@ -37,7 +37,8 @@ pacman::p_load(
   hrbrthemes,
   extrafont,
   RColorBrewer,
-  knitr
+  knitr,
+  here
 )
 ```
 
@@ -49,7 +50,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 
 ```{r}
-whogov <- import("Data/WhoGov_crosssectional_V1.2.csv")
+whogov <- import(here("Data", "WhoGov_crosssectional_V1.2.csv"))
 ```
 
 # Data Viz Challenge
