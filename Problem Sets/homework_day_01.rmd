@@ -5,7 +5,7 @@ date: "`r format(Sys.time(), '%d %B %Y')`"
 output: 
   html_document:
     keep_md: false
-    theme: cosmo
+    theme: yeti
     highlight: textmate
     toc: yes
     toc_depth: 4
@@ -52,12 +52,12 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 Finally. The survey company you hired (Survey Company International) just mailed you the raw data.<sup>[1]<sup/>
 
 You came a long way. You secured funding for your research project/thesis, presented it to your
-supervisors, you did a systematic review, wrote the theory section, and designed the
+supervisors, did a systematic review, wrote the theory section, and designed the
 questionnaire. 
 
 Now, the exciting part begins. 
 
-You unzip the folder and there it is, the precious file you need so desperately...
+You unzip the folder, and there it is, the precious file you need so desperately...
 
 ```{r, echo=FALSE, fig.align='center', out.width= "10%"}
 knitr::include_graphics(here("Figures/xlsx.png"))
@@ -65,13 +65,13 @@ knitr::include_graphics(here("Figures/xlsx.png"))
 
 ... In `.xlsx`. "Huh?" You asked explicitly for a more robust file type.
 
-But, alas, maybe they mis-read the e-mail and atleast it's not stored in 
+But, alas, maybe they misread the e-mail, and at least it's not stored in 
 [`.xls`](https://www.bbc.com/news/technology-54423988). 
 
 "Thanks to R's extensive importing 
 capabilities, that's no issue at all," you say to yourself. 
 
-"It's not like they messed up data collection, it's just stored as .xlsx". 
+"It's not like they messed up data collection; it's just stored as .xlsx". 
 
 You click on the file.
 
@@ -91,7 +91,7 @@ knitr::include_graphics(here("Figures/data.png"))
 
 - $N = 500$
     
-- This is not a real data set. It was simulated with R.
+- This is not an actual data set. It was simulated with R.
 
 - It's a "panel" survey consisting of three waves in April, May, and June.
 
@@ -112,15 +112,15 @@ knitr::include_graphics(here("Figures/data.png"))
 If you put out your document to `html`, explore `DT::datatable()` for some 
 interactivity!
 
-You do not need to manually manipulate the Excel file to complete these tasks.
+You do not need to manipulate the Excel file manually to complete these tasks.
 
 ## Hints
 
-Look up `?rio::import_list` and the here package. I normalized the directory in the
+Look up `?rio::import_list` and the `here` package. I normalized the directory in the
 `knitr` setup of this `.Rmd` file such that relative file paths from the project root
 should work.
 
-You will likely practice a key skill for your carrer as empirical researcher/
+You will likely practice a key skill for your career as empirical researcher/
 data scientist: googling. That's normal!
 
 # Start Wrangling!

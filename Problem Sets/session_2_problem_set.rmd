@@ -54,7 +54,7 @@ Check your intuition with R.
 
 # Task 2
 
-Create a named list containing a data frame, a character vector and a list. Access the 
+Create a named list containing a data frame, a character vector, and a list. Access the 
 first element of the first element and the second element.
 
 ```{r}
@@ -97,7 +97,7 @@ Your solution:
 
 # Task 5
 
-In this task, you will learn a few important functions in base R.
+In this task, you will learn a few essential functions in base R.
 
 #### 1. Sequences
 

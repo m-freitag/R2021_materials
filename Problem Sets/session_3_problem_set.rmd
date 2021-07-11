@@ -81,7 +81,7 @@ Source: [tidytuesday](https://github.com/rfordatascience/tidytuesday/blob/master
 
 # Task 1
 
-Familiarize yourself with the data. What's each variables type/class?
+Familiarize yourself with the data. What's each variable's type/class?
 
 ```{r}
 
@@ -137,8 +137,7 @@ row for each country and these new variables.
 ## b) 
 
 Calculate, for each country and issue, the number and share of "yes" votes but 
-only for "important votes" and for the [permanent members](https://www.un.org/securitycouncil/content/current-members) 
-of the security council. The output should have 30 rows.
+only for "important votes" and for security council's [permanent members](https://www.un.org/securitycouncil/content/current-members). The output should have 30 rows.
 
 ```{r}
 
