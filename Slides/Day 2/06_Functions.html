@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Session 5: Writing Functions</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Markus Freitag" />
+    <meta name="date" content="2021-07-13" />
+    <script src="05_Functions_files/header-attrs-2.8/header-attrs.js"></script>
+    <link href="05_Functions_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <script src="05_Functions_files/fabric-4.3.1/fabric.min.js"></script>
+    <link href="05_Functions_files/xaringanExtra-scribble-0.0.1/scribble.css" rel="stylesheet" />
+    <script src="05_Functions_files/xaringanExtra-scribble-0.0.1/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#644155"],"pen_size":3,"eraser_size":30}) })</script>
+    <script src="05_Functions_files/clipboard-2.0.6/clipboard.min.js"></script>
+    <link href="05_Functions_files/shareon-1.4.1/shareon.min.css" rel="stylesheet" />
+    <script src="05_Functions_files/shareon-1.4.1/shareon.min.js"></script>
+    <link href="05_Functions_files/xaringanExtra-shareagain-0.2.6/shareagain.css" rel="stylesheet" />
+    <script src="05_Functions_files/xaringanExtra-shareagain-0.2.6/shareagain.js"></script>
+    <link href="05_Functions_files/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="05_Functions_files/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Copy Code","success":"Copied!","error":"Press Ctrl+C to Copy"})</script>
+    <link rel="stylesheet" href="helpers/lys.css" type="text/css" />
+    <link rel="stylesheet" href="helpers/lys-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+
+
+
+
+
+
+
+
+class: inverse, center, title-slide, middle
+
+&lt;style&gt; .title-slide .remark-slide-number {
+  display: none;
+} &lt;/style&gt;
+
+# .title-wrap[Intro to Programming with R for Political Scientists]
+
+&lt;br /&gt;
+
+## .header-fancy[Session 5: Writing Functions]
+
+### Markus Freitag
+
+### Geschwister Scholl Institute of Political Science, LMU
+
+### [&lt;svg viewBox="0 0 512 512" style="height:1em;position:relative;display:inline-block;top:.1em;fill:#415564;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"&gt;&lt;/path&gt;&lt;/svg&gt;](https://twitter.com/MarkusGFreitag) [&lt;svg viewBox="0 0 496 512" style="height:1em;position:relative;display:inline-block;top:.1em;fill:#415564;" xmlns="http://www.w3.org/2000/svg"&gt;  &lt;path d="M336.5 160C322 70.7 287.8 8 248 8s-74 62.7-88.5 152h177zM152 256c0 22.2 1.2 43.5 3.3 64h185.3c2.1-20.5 3.3-41.8 3.3-64s-1.2-43.5-3.3-64H155.3c-2.1 20.5-3.3 41.8-3.3 64zm324.7-96c-28.6-67.9-86.5-120.4-158-141.6 24.4 33.8 41.2 84.7 50 141.6h108zM177.2 18.4C105.8 39.6 47.8 92.1 19.3 160h108c8.7-56.9 25.5-107.8 49.9-141.6zM487.4 192H372.7c2.1 21 3.3 42.5 3.3 64s-1.2 43-3.3 64h114.6c5.5-20.5 8.6-41.8 8.6-64s-3.1-43.5-8.5-64zM120 256c0-21.5 1.2-43 3.3-64H8.6C3.2 212.5 0 233.8 0 256s3.2 43.5 8.6 64h114.6c-2-21-3.2-42.5-3.2-64zm39.5 96c14.5 89.3 48.7 152 88.5 152s74-62.7 88.5-152h-177zm159.3 141.6c71.4-21.2 129.4-73.7 158-141.6h-108c-8.8 56.9-25.6 107.8-50 141.6zM19.3 352c28.6 67.9 86.5 120.4 158 141.6-24.4-33.8-41.2-84.7-50-141.6h-108z"&gt;&lt;/path&gt;&lt;/svg&gt;](https://markusfreitag.netlify.app/)
+
+
+### 19.07.2021
+
+&lt;a href="https://github.com/m-freitag" class="github-corner" aria-label="View
+source on Github"&gt;&lt;svg width="80" height="80" viewBox="0 0 250 250"
+style="fill:#415564; color:#f6f3f2; position: absolute; top: 0; border: 0;
+right: 0;" aria-hidden="true"&gt;&lt;path d="M0,0 L115,115 L130,115 L142,142 L250,250
+L250,0 Z"&gt;&lt;/path&gt;&lt;path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6
+C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9
+125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor"
+style="transform-origin: 130px 106px;" class="octo-arm"&gt;&lt;/path&gt;&lt;path
+d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2
+139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2
+159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2
+C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2
+216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4
+203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9
+156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+fill="currentColor"
+class="octo-body"&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;&lt;style&gt;.github-corner:hover
+.octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes
+octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media
+(max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner
+.octo-arm{animation:octocat-wave 560ms ease-in-out}}&lt;/style&gt;
+
+---
+
+# Overview
+
+1. Intro + R-Studio and (Git)Hub
+
+2. Base R &amp; Tidyverse Basics
+
+3. Data Wrangling I
+
+4. Data Wrangling II
+
+5. Data Viz
+
+6. .hl[Writing Functions]
+
+
+---
+
+# Workflow
+
+- Navigate to `Session Scripts &gt; Session 4` and open `Session_5_script.R`.
+
+- You will see a pre-formatted Script with all the steps I do on the slides.
+
+- Explore as you follow. 
+
+- If you have a second monitor, great! If not, split your screen.
+
+
+---
+
+class: inverse, center, middle name: intro
+
+
+# Functions and Functional Programming in R
+
+
+---
+
+# A Primer on Functional Programming
+
+Even though not all functions are .hl[pure].font70[&lt;sup&gt;[1]&lt;/sup&gt;], R is kind of a functional programming language as it has .hl2[first-class] functions.
+
+&gt;In general, programming languages impose restrictions on the ways in which computational 
+&gt;elements can be manipulated. Elements with the fewest restrictions are said to have first-class status. 
+&gt;Some of the “rights and privileges” of first-class elements are:
+
+&gt; - They may be named by variables.
+&gt; - They may be passed as arguments to procedures.
+&gt; - They may be returned as the results of procedures.
+&gt; - They may be included in data structures. ([Abelson et al. 1996](https://library.oapen.org/bitstream/handle/20.500.12657/26092/sicp.pdf?sequence=1): 102)
+
+Because of these features, R "[lends itself to a style of problem solving centred on functions.](https://adv-r.hadley.nz/fp.html#fp)"
+
+.font70[ &lt;sup&gt;[1]&lt;/sup&gt; .hl[NOTE:] Not all functions are .hl[pure] as some functions output changes even with stable input (e.g. `rnorm()`).]
+
+---
+
+# Recap: Anatomy of a Function
+
+- We have already written a very basic function on our own (session 2) and used a ton of base and user-written ones. 
+
+- .hl[Recall:] Functions are objects. In math: a function maps elements from one set to another.
+
+- Input `\(x\)`, rule `\(f\)`, output `\(f(x)\)`. This is pretty much the same in programming.
+
+- A function in R consists of three components: an .hl2[argument list], a .hl2[body], and an environment.
+
+
+Syntax:
+
+--
+
+.code70[
+
+```r
+name &lt;- function(`COMMA-SEPARATED LIST OF ARGUMENTS`) {
+  `FUNCTION BODY / OPERATIONS`
+  return(THE VALUES OR OBJECTS WE WANT OUR FUNCTION TO RETURN) 
+}
+```
+]
+
+.font70[
+.hl2[Note:] `return()` is not strictly necessary because R returns the last object you
+defined within the function by default. But making explicit what gets returned is .hl[good style].]
+
+
+
+
+---
+
+# Function Environment
+
+- A function in R consists of three components: an argument list, a body, and an .hl2[environment].
+
+&gt; When a function is called, a new environment (called the evaluation environment) 
+&gt; is created, [...]. This new environment is initially populated with the unevaluated 
+&gt; arguments to the function; as evaluation proceeds, local variables are created within it. ([R Language Definition](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Function-objects))
+
+- So what happens is that instead of in your global environment, objects you create within a funtion are
+local and only the output defined by `return` gets passed on. 
+
+--
+
+- [Lexical Scoping](https://adv-r.hadley.nz/functions.html#lexical-scoping)/How functions find values: The first place where
+functions "look" for values of named objects is in inside the function. It only then turns to the parent environments.
+The function environment is fresh every call. 
+
+
+---
+
+# An Example
+
+
+
+```r
+fun &lt;- function(x = 3) { # we can specify a default value
+  intermediate &lt;- (2 * x + 3) / sqrt(3)
+  output &lt;- data.frame(input = x, output = intermediate)
+  return(output) # good practice
+}
+
+fun()
+```
+
+```
+##   input   output
+## 1     3 5.196152
+```
+
+```r
+fun(2)
+```
+
+```
+##   input   output
+## 1     2 4.041452
+```
+
+
+---
+
+# An Example
+
+Scoping:
+
+
+```r
+x = 7
+
+fun()
+```
+
+```
+##   input   output
+## 1     3 5.196152
+```
+
+---
+
+# Control Flow
+
+&gt; In computer science, [control flow](https://en.wikipedia.org/wiki/Control_flow) (or flow of control) is the order in which 
+individual statements, instructions or function calls of an imperative program are executed or evaluated.
+
+- There are two basic tools to control the flow of our code, especially in functions: .hl[conditions/choices] and .hl2[loops].
+
+--
+
+- .hl2[Loops]: Often, we want function to iterate over inputs. Most programming languages use `for` loops for this. In R, 
+`for` loops iterate over elements in vectors:
+
+
+```r
+ for (element in vector) DO SOMETHING 
+```
+
+--
+
+- .hl[Choices]:
+
+```r
+if (CONDITION) IS TRUE DO SOMETHING else DO SOMETHING ELSE
+```
+
+---
+
+# Control Flow: Examples
+
+.code80[
+
+```r
+fun("hello")
+```
+
+```
+## Error in 2 * x: non-numeric argument to binary operator
+```
+
+```r
+fun &lt;- function(x = 3) { 
+
+  if (is.numeric(x)) {
+  
+  intermediate &lt;- (2 * x + 3) / sqrt(3)
+  output &lt;- data.frame(input = x, output = intermediate)
+  return(output)
+  
+  } else {
+
+  stop("The input you provide has to be numeric.")   
+
+  }
+}
+```
+]
+
+We can use `stop()` to overwrite the error message (see also `warning()` and `message()`)
+
+---
+
+# Control Flow: Examples
+
+
+
+```r
+fun("hello")
+```
+
+```
+## Error in fun("hello"): The input you provide has to be numeric.
+```
+
+--
+
+`if` operates only on scalar booleans (i.e. a single `TRUE/FALSE`)...
+
+.code70[
+
+```r
+set.seed(666)
+
+x &lt;- rnorm(10)
+
+if (x &lt; 0) {
+  "negative"
+} else {
+  "positive"
+}
+```
+
+```
+## [1] "positive"
+```
+]
+
+Mostly used in function building/when a scalar condition is needed/sufficient (see previous slide).
+
+---
+
+# Control Flow: Examples
+
+Combining the scalar `if` with a `for` loop to "grow" an object telling us whether 
+each element of `x` is `positive` or `negative` iteratively:
+
+.code60[
+
+```r
+nested &lt;- function(z = NULL) { # setting default to NULL
+  
+  y &lt;- vector(mode = "character", length = 10) # initialise, e.g., an empty vector; preallocate memory
+# y &lt;- NULL This works too, but R has to grow, copy, paste and allocate memory at each step. This is slow. 
+
+  for (i in 1:length(z)) { # We can reference the element with whatever name, i is just convention.
+
+    if (z[i] &lt; 0) {
+      y[i] &lt;- "negative"
+    } else {
+      y[i] &lt;- "positive"
+    }
+  }
+  
+  return(y)
+
+}
+
+nested(z = x)
+```
+
+```
+##  [1] "positive" "positive" "negative" "positive" "negative" "positive"
+##  [7] "negative" "negative" "negative" "negative"
+```
+]
+
+---
+
+# Control Flow: Examples
+
+We already got introduced to .hl[vectorised] versions of if statements: `if_else()`/`ifelse()` and the more general `case_when()`:
+
+
+```r
+vectorised &lt;- function(z = NULL) { 
+
+  ifelse(x &lt; 0, "negative", "positive")
+
+}
+
+vectorised(z = x)
+```
+
+```
+##  [1] "positive" "positive" "negative" "positive" "negative" "positive"
+##  [7] "negative" "negative" "negative" "negative"
+```
+
+That's much easier (and faster)!
+
+---
+
+# Vectorisation
+
+- We already got introduced to vectorised versions of if statements: `if_else()`/`ifelse()` and the more general `case_when()`.
+
+What is meant by "vectorised"?
+
+- You often read the following: it means that the function is applied on every element of an vector/list at .hl2[once].
+
+
+---
+
+# Vectorisation
+
+
+```r
+fun &lt;- function(x = 3) { 
+  intermediate &lt;- (2 * x + 3) / sqrt(3)
+  output &lt;- data.frame(input = x, output = intermediate)
+  return(output) 
+}
+
+fun(c(1,2,3))
+```
+
+```
+##   input   output
+## 1     1 2.886751
+## 2     2 4.041452
+## 3     3 5.196152
+```
+
+---
+
+# Vectorisation
+
+
+- We already got introduced to vectorised versions of if statements: `if_else()`/`ifelse()` and the more general `case_when()`.
+
+What is meant by "vectorised"?
+
+- You often read the following: it means that the function is applied on every element of an vector/list at .hl2[once].
+
+- Except it's not literally doing that...
+
+.hl[Technical Fine Point:] At the core, everything you type in R is a vector. [Actually](https://www.r-bloggers.com/2014/04/vectorization-in-r-why/), 
+in vectorised functions, the vector get's just passed on to the compiled code of 
+a lower-level language (e.g. C++) which itself consists of... loops.
+
+
+---
+
+# Do I need to explicitly write a loop?
+
+- I like loops.font70[&lt;sup&gt;[2]&lt;/sup&gt;], but in R they are sometimes slow .hl[if not done properly] (see sec. Ch. of the [R Inferno](https://www.burns-stat.com/pages/Tutor/R_inferno.pdf)). What makes loops slow is the stuff you do inside of them.
+  
+- There are a few ways out:
+
+--
+  
+  - Vectorising the stuff inside. E.g., if you can replace a nested `for` loop containing `if` statements with `ifelse()`, do it. [Recursion](https://en.wikipedia.org/wiki/Recursion_(computer_science)) (`if`) is
+  also slower than loops in R.
+
+  - Another way is to use .hl2[functionals]: functions that take a vector and 
+other functions as arguments.
+
+  - For instance, with `lapply()` from the `*apply()` family or the equivalent but optimized tidyverse alternative 
+`purrr::map()`, we can make .hl2[applying a function to every element of a vector and returning a list] often a one-liner.
+
+.font70[ &lt;sup&gt;[2]&lt;/sup&gt; .hl[Comment:] That's why I also like Julia for some (simulation) tasks. I can 
+get away more easy with writing [fugly loops](https://elbersb.com/public/posts/interaction_simulation/).]
+
+---
+
+# Do I need to explicitly write a loop?
+
+Why do these .hl2[functionals] work well?
+
+They...
+
+  - automatically pre-allocate memory (we can do that manually too, see Ex. a few slides ago!).
+
+  - make use of compiled C code.
+
+.hl[NOTE:] They are not really vectorized functions (or faster) but make .hl2[syntax cleaner]
+and make it easier to not screw up. 
+
+The use of functionals to avoid looping is related to/a core topic of Hadley-Style .hl2[functional programming].
+
+---
+
+# Functionals
+
+The syntax of the `*apply()` family and `purrr::map()` is virtually identical.
+
+We can also specify the data structure we want to get with `map_*`:
+
+
+```r
+is_positive &lt;- function(z) {
+    if (z &lt; 0) {
+      "negative"
+    } else {
+      "positive"
+    }
+}
+
+purrr::map_chr(x, is_positive)
+```
+
+```
+##  [1] "positive" "positive" "negative" "positive" "negative" "positive"
+##  [7] "negative" "negative" "negative" "negative"
+```
+
+---
+
+# Functionals
+
+
+```r
+purrr::map_df(penguins, mean, na.rm = TRUE)
+```
+
+```
+## # A tibble: 1 x 8
+##   species island bill_length_mm bill_depth_mm flipper_length_~ body_mass_g   sex
+##     &lt;dbl&gt;  &lt;dbl&gt;          &lt;dbl&gt;         &lt;dbl&gt;            &lt;dbl&gt;       &lt;dbl&gt; &lt;dbl&gt;
+## 1      NA     NA           43.9          17.2             201.       4202.    NA
+## # ... with 1 more variable: year &lt;dbl&gt;
+```
+
+```r
+penguins %&gt;%
+  summarise(across(.cols = everything(), mean, na.rm = TRUE))
+```
+
+```
+## # A tibble: 1 x 8
+##   species island bill_length_mm bill_depth_mm flipper_length_~ body_mass_g   sex
+##     &lt;dbl&gt;  &lt;dbl&gt;          &lt;dbl&gt;         &lt;dbl&gt;            &lt;dbl&gt;       &lt;dbl&gt; &lt;dbl&gt;
+## 1      NA     NA           43.9          17.2             201.       4202.    NA
+## # ... with 1 more variable: year &lt;dbl&gt;
+```
+
+---
+
+# Functionals
+
+Functionals can take anonymous functions...
+
+.code60[
+
+```r
+purrr::map_df(penguins, function(x) is.numeric(x))
+```
+
+```
+## # A tibble: 1 x 8
+##   species island bill_length_mm bill_depth_mm flipper_length_~ body_mass_g sex  
+##   &lt;lgl&gt;   &lt;lgl&gt;  &lt;lgl&gt;          &lt;lgl&gt;         &lt;lgl&gt;            &lt;lgl&gt;       &lt;lgl&gt;
+## 1 FALSE   FALSE  TRUE           TRUE          TRUE             TRUE        FALSE
+## # ... with 1 more variable: year &lt;lgl&gt;
+```
+]
+
+Anonymous functions are also quite useful in combination with dplyr...
+
+.code60[
+
+```r
+penguins %&gt;%
+  select(function(x) is.numeric(x)) %&gt;%
+  head(1)
+```
+
+```
+## # A tibble: 1 x 5
+##   bill_length_mm bill_depth_mm flipper_length_mm body_mass_g  year
+##            &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt; &lt;int&gt;
+## 1           39.1          18.7               181        3750  2007
+```
+]
+
+
+---
+
+# Functionals
+
+There are also a few useful shorthands to make this less verbose...
+
+
+```r
+purrr::map_df(penguins, ~ is.numeric(..1))
+```
+
+```
+## # A tibble: 1 x 8
+##   species island bill_length_mm bill_depth_mm flipper_length_~ body_mass_g sex  
+##   &lt;lgl&gt;   &lt;lgl&gt;  &lt;lgl&gt;          &lt;lgl&gt;         &lt;lgl&gt;            &lt;lgl&gt;       &lt;lgl&gt;
+## 1 FALSE   FALSE  TRUE           TRUE          TRUE             TRUE        FALSE
+## # ... with 1 more variable: year &lt;lgl&gt;
+```
+
+You can use `..1` (or `.x` and `.y`) and so forth for multiple-argument functions.
+
+---
+
+# Functionals
+
+
+&lt;img src="Figs/map.gif" width="60%" style="display: block; margin: auto;" /&gt;
+
+Source: [Wikipedia](https://bit.ly/3dWfYYD). Maps are common in pretty in programming languages.
+
+
+---
+
+class: inverse, center, middle name: intro
+
+# Examples: Functional Programming and ggplot
+
+
+---
+
+# Combining map() and ggplot()
+
+.pull-left[
+.font80[  
+We have already learned facets as a way to make a multi-panel plot. 
+But what if we just want multiple plots? Copying can be tedious.
+
+Witness the power of the functional approach...
+]
+
+.code45[
+
+```r
+penguin_scatter &lt;- function(df, x, y, color = NULL, shape = NULL) {
+
+  ggplot(df, aes_string(x = x, y = y, color = color, shape = shape)) +
+    geom_point(size = 2, alpha = 0.6) +
+    geom_smooth(method = "lm", se = FALSE) +
+    scale_colour_brewer(palette = "Dark2") +
+    theme_ipsum()
+  
+}
+
+penguin_scatter(penguins,
+  x = "flipper_length_mm", 
+  y = "body_mass_g",
+  color = "species",
+  shape = "species"
+)
+```
+]
+]
+.pull-right[
+
+&lt;img src="05_Functions_files/figure-html/funp-out-1.png" width="504" style="display: block; margin: auto;" /&gt;
+
+]
+
+
+---
+
+# Combining map() and ggplot()
+
+.font80[
+Getting a tibble of all distinct combinations of names of numeric variables (not gonna lie, took some time to cook it up - specifying it manually would've probably been easier)...
+]
+
+.code60[
+
+```r
+combs &lt;- penguins %&gt;%
+  select(function(x) is.numeric(x), -year) %&gt;% # get only numeric cols, except year
+  names() %&gt;% # get a character vector of column names
+  tibble(y = ., x = .) %&gt;%  # put it into two tibble columns
+  tidyr::expand(x, y) %&gt;% # all combinations of a variable in a data set
+  transmute(y = pmin(y, x), x = pmax(y, x)) %&gt;% # some "sorting" shenanigans to get distinct combs
+  distinct() %&gt;% # cleaning stuff that did not get picked up in the step above
+  filter(y != x) # "
+combs
+```
+
+```
+## # A tibble: 6 x 2
+##   y              x                
+##   &lt;chr&gt;          &lt;chr&gt;            
+## 1 bill_depth_mm  bill_length_mm   
+## 2 bill_depth_mm  body_mass_g      
+## 3 bill_length_mm body_mass_g      
+## 4 bill_depth_mm  flipper_length_mm
+## 5 bill_length_mm flipper_length_mm
+## 6 body_mass_g    flipper_length_mm
+```
+
+]
+
+---
+
+# Combining map() and ggplot()
+
+Letting the magic happen with `pmap()`.
+
+.font70[
+&gt; .hl2[Function Description:] These functions are variants of map() that iterate over multiple arguments 
+simultaneously. They are parallel in the sense that each input is processed 
+in parallel with the others, not in the sense of multicore computing. 
+They share the same notion of "parallel" as base::pmax() and base::pmin(). 
+map2() and walk2() are specialised for the two argument case; pmap() and 
+pwalk() allow you to provide any number of arguments in a list. 
+Note that a data frame is a very important special case, in which 
+case pmap() and pwalk() apply the function .f to each row.
+]
+
+
+```r
+plots &lt;- pmap(combs, function(x,y) penguin_scatter(penguins,
+  x = x,
+  y = y,
+  color = "species",
+  shape = "species"
+))
+```
+
+---
+
+# Combining map() and ggplot()
+
+.code45[
+
+```r
+patchwork::wrap_plots(plots) # wrap_plots makes it easy to take a list of plots and add them into one composition, along with layout specifications.
+```
+
+&lt;img src="05_Functions_files/figure-html/unnamed-chunk-20-1.png" width="1224" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+# Normalize Writing Functions
+
+.font80[ 
+- On your way towards a proficient R user, you should try to integrate writing 
+functions in your workflow. Mastering functions (and OOP) also makes switching between 
+languages more easy!
+
+.hl[When to write a function?]
+
+  - Whenver you copy some block of code a few times, there surely is a way to save
+some lines with a function. This makes your code much more readable!
+
+  - A typical application case in statistics is simulations.
+
+  - If you want to plot multiple things, functions become extremely handy! 
+]
+
+--
+
+.font80[ 
+.hl2[Stylistic Rules]
+
+  - To make your functions readable for your future self, name them and their arguments
+  properly. Specifity &gt; brevity.
+
+  - Comment more complex functions extensively or you will be doomed!
+
+You wrote a neat function you need alot in your daily workflow? Consider [packaging it](https://www.mzes.uni-mannheim.de/socialsciencedatalab/article/r-package/)!
+]
+
+---
+  
+# A Brief Aside on Debugging in R-Studio
+
+While you should be relatively well equipped to understand some errors or warnings
+that R throws, there will often be situations where you simply have no clue.
+
+When writing a function, avoid this by writing several small functions instead of a single large one. 
+
+  - Most of the time, you can get away by googling errors and consulting, e.g. [stackoverflow](https://stackoverflow.com/).
+
+  - Or, you can use [`errorist`](https://github.com/r-assist/errorist) to automatically search errors and warnings when
+  they arise.
+
+You can also use [R-Studios debugging tool](https://support.rstudio.com/hc/en-us/articles/205612627-Debugging-with-the-RStudio-IDE) 
+to peek under the hood of a function, execute it line by line and spot the error.
+
+I mostly enter the debugging mode with: 
+
+
+```r
+debugonce(your_function)
+your_function()
+```
+
+
+---
+
+# Some Words on Linting
+
+When writing functions, keeping your code clean is especially important for legibility.
+
+While the first `session_script` contains some information on structuring scripts,
+we did not touch on code so far. 
+
+Linting means stylistically standardizing code/ a software that tells you which lines of code are badly formatted/have errors. 
+Other languages have fix conventions, R does not. But see the [tidyverse style guide](https://style.tidyverse.org/).
+
+While Rstudio has some auto code formatting and code and snippet suggestions, it does not natively provide
+code linting.
+
+My Tipp is to use [`styler`](https://github.com/r-lib/styler), an Rstudio addin.
+
+Let's take a look...
+
+
+---
+
+class: inverse, center, middle name: intro
+
+# Session 5: Problem Set
+&lt;br/&gt;
+### If you want to master functions there is only one way...
+&lt;br/&gt;
+## Get your hands dirty!
+
+
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"highlightSpans": true,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+<script src="https://cdn.jsdelivr.net/npm/vara@1.2.0/src/vara.min.js" type="text/javascript"></script>
+
+
+<script>
+  
+const handw = new Vara('.handw', "https://raw.githubusercontent.com/akzhy/Vara/master/fonts/Shadows-Into-Light/shadows-into-light.json", [{
+    text:"                Session 2: Base R and Tidyverse Basics"
+  }],{
+    fontSize:20,
+    color:"#415564",
+    strokeWidth:2,
+    textAlign:"left",
+    duration:2500,
+    y:50
+  }); 
+  
+
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
