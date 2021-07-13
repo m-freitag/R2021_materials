@@ -59,7 +59,7 @@
 
 # CalculatoR -------------------------------------------------------------------
 
-7 + 5 # [n] stands for the nth element printed to the console.
+7 + 5 + 1 # [n] stands for the nth element printed to the console.
 
 4 * 5 + 2 / 3^3 # Multiplication and division first, then addition and subtraction
 

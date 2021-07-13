@@ -35,7 +35,8 @@ pacman::p_load(
   rio,
   modelsummary,
   knitr,
-  here
+  here,
+  arrow
 )
 
 ```
@@ -48,12 +49,6 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
 
-```{r}
-# The .csv would've had 200mb; .parquet is under  1mb. The power of compression.
-unvotes <- rio::import(here("Data", "unvotes.parquet"))
-
-```
-
 # Data Wrangling UN Votes
 
 In this problem set, we will use data from the [unvotes](https://github.com/dgrtwo/unvotes)
@@ -63,7 +58,7 @@ Here is a description of the data set:
 
 | variable      | description                                                                                                                                                              |
 |---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| rcid          | The roll call id; used to join with un_votes and un_roll_call_issues                                                                                                     |
+| rcid          | The roll call id; An identifier for each vote; used to join with un_votes and un_roll_call_issues                                                                                                     |
 | country       | Country name, by official English short name                                                                                                                             |
 | country_code  | 2-character ISO country code                                                                                                                                             |
 | vote          | Vote result as a factor of yes/abstain/no                                                                                                                                |
@@ -78,21 +73,155 @@ Here is a description of the data set:
 | short_name    | Two-letter issue codes                                                                                                                                                   |
 | issue         | Descriptive issue name, 6 issues                                                                                                                                                   |
 
+It's panel data (/time-series cross-sectional data/longitudinal data). That is, we observe our observational units, in this case countries, over time.
+
+For non-political scientists, here is a bit of a longer description of the data:
+
+The [UN General Assembly](https://en.wikipedia.org/wiki/United_Nations_General_Assembly) is the main deliberative/policy-making/representative institution of the UN. From 1946 onwards, the countries (almost any country in the world) of the UN meet every year (in so called "sessions" that take a couple of months) to vote on recommendations on peace, economic development, disarmament, human rights, etc. Each country has one vote and can vote "yes", "no", or can "abstain" (roll call; see `rcid`). In each year (session-year), multiple issues are voted upon on several occasions (see variable `date`). The broader issue category is measured by the variable `issue`.
+
 Source: [tidytuesday](https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-03-23/readme.md).
+
+# Loading the Data
+
+In a first step, we import the data. Thanks to the [`rio`](https://github.com/leeper/rio) package, this is super easy.
+You don`t have to be afraid of missing anything because you stick to this comfort wrapper. It's just data importing; you don't need to memorize 5 or more packages when you can learn one in the beginning. I also use this package all the time.
+
+Our data is stored as a `.parquet` file and is not exactly small with almost 1 million observations. The `.csv` would've had 200 mb while `.parquet` is under 1mb. The power of compression.
+
+
+```{r}
+
+unvotes <- rio::import(here("Data", "unvotes.parquet"))
+
+```
+
+A note on the "here" package:
+
+We use R projects to organize our analysis. This is nice, as clicking on the `.rproj` file initializes an R project which sets the working directory to the project root (the place where the `.rproj` file lives in). We can then use relative file paths to point R to the files we want to import/use in our script. 
+
+However, when you work across different operating systems (e.g., Windows and Mac), relative file paths won't work properly. Moreover, `.Rmd` files such as the one here won't work with relative file paths when you knit the document (via the blue button above). This is because they set the knitting directory to the folder where the file is placed by default. You can reset this default via:
+
+```{r, eval = FALSE}
+knitr::opts_knit$set(root.dir = normalizePath('../')) # for windows.
+```
+
+Because all of this, the `here` package exists. It makes relative file paths **just work.**
+
+So instead of passing a relative file path to the file importing function of your choice, you wrap it into the `here()` function. Inside the function (starting from the project root, see example above), you simply pass the folder (and sub-folders if they exists) and the file name as strings separated by commas. Easy and robust!
+
 
 # Task 1
 
+
 Familiarize yourself with the data. What's each variable's type/class?
+
 
 ```{r}
 
 ```
 
+
 What is the level of observation of this data set?
+
+- Your Answer: 
 
 Is this data set tidy?
 
+- Your Answer: 
+
 # Task 2
+
+## a) Pipes
+
+I generate some random data:
+
+```{r}
+# generate 10000 random observations drawn from a normal distribution (mean = 0, sd = 1.
+x <- rnorm(10000) 
+```
+
+
+Re-write the following code with a pipe:
+
+```{r, eval = FALSE}
+
+# 1: 
+
+# Kernel density plot made via Base R's plotting functions for your understanding.
+# Base R's plotting functions are pretty mediocre, though. We will learn a better way soon: ggplot2.
+plot(density((x)))
+
+# 2:
+
+round(log(sqrt(abs(exp(x)))))
+
+# 3:
+
+# Pipe out 1 instead of x this time.
+
+round(x, digits = 1)
+```
+
+Your Answer:
+
+```{r}
+
+```
+
+
+## b) filter()
+
+Filter the `unvotes` data frame such that you obtain observations only from the US. Bind the resulting object to a new name `unvotes_us` (this would be the accurate way of phrasing assignment. For simplicity you can also read this as "create a new object named `unvotes_us`"). Do this with **AND** without pipes!
+
+Also, make the `data.frame` a `tibble` and print it to the console.
+
+Note: If you need help, consult the slides or the help files via `?FUNCTIONNAME`. Check if you understood data masking. 
+
+
+```{r}
+
+```
+
+## c) summarise()
+
+Using `unvotes_us`, "collapse" the data to a tibble showing the number of "yes" votes (pooled over all years). For a hint, scroll to the bottom of this document.
+
+```{r}
+
+```
+
+## d) mutate()
+
+"Overwrite" `unvotes_us` and create a new variable `year` holding the year of the roll call. 
+
+```{r}
+
+```
+
+## e) select() and arrange()
+
+Select the `year`, the `rcid`, the `descr` variable, and the `issue` variable and sort the tibble by `issue`.
+
+```{r}
+
+```
+
+Select everything but the `year` variable (Hint: read the select help file; there is a very short way to do this!).
+
+```{r}
+
+```
+
+## f) group_by()
+
+Take the entire data frame and create a new variable that holds, for each country, the number of yes votes. Tip: to check if this worked fine, `arrange()` by country. 
+
+```{r}
+
+```
+
+
+# Task 3
 
 ## a)
 
@@ -102,8 +231,7 @@ datasummary_skim(unvotes$issue, type = "categorical")
 ```
 you get a quick summary for the categorical issue variable.
 
-However, as each `rcid` occurs multiple times for each country, the issues are,
-of course, also repeatedly present in our data.
+However, as each `rcid` occurs multiple times for each country, the issues are, of course, also repeatedly present in our data.
 
 What we want is a **sorted** table for the distribution of our issue variable 
 over all roll calls.
@@ -122,7 +250,7 @@ Which issue category has the highest share of important votes?
 
 ```
 
-# Task 3
+# Task 4
 
 
 ## a) 
@@ -158,6 +286,8 @@ each country.
 
 # Hints:
 
-Task 2a: `distinct()` may be helpful here!
+Task 2c: You also need `filter()` and `n()` for this.
 
-Task 2b: Check out the arguments of `distinct()`!
+Task 3a: `distinct()` may be helpful here!
+
+Task 3b: Check out the arguments of `distinct()`!

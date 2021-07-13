@@ -257,13 +257,11 @@ div.tocify {
 <h1 class="title toc-ignore">Session 3: Problem Set</h1>
 <h3 class="subtitle">Data Wrangling I</h3>
 <h4 class="author">Your Name</h4>
-<h4 class="date">11 Juli 2021</h4>
+<h4 class="date">13 Juli 2021</h4>
 
 </div>
 
 
-<pre class="r"><code># The .csv would&#39;ve had 200mb; .parquet is under  1mb. The power of compression.
-unvotes &lt;- rio::import(here(&quot;Data&quot;, &quot;unvotes.parquet&quot;))</code></pre>
 <div id="data-wrangling-un-votes" class="section level1">
 <h1>Data Wrangling UN Votes</h1>
 <p>In this problem set, we will use data from the <a href="https://github.com/dgrtwo/unvotes">unvotes</a> package. It contains data for all countries voting history in the general assembly.</p>
@@ -282,7 +280,7 @@ unvotes &lt;- rio::import(here(&quot;Data&quot;, &quot;unvotes.parquet&quot;))</
 <tbody>
 <tr class="odd">
 <td>rcid</td>
-<td>The roll call id; used to join with un_votes and un_roll_call_issues</td>
+<td>The roll call id; An identifier for each vote; used to join with un_votes and un_roll_call_issues</td>
 </tr>
 <tr class="even">
 <td>country</td>
@@ -338,16 +336,86 @@ unvotes &lt;- rio::import(here(&quot;Data&quot;, &quot;unvotes.parquet&quot;))</
 </tr>
 </tbody>
 </table>
+<p>It’s panel data (/time-series cross-sectional data/longitudinal data). That is, we observe our observational units, in this case countries, over time.</p>
+<p>For non-political scientists, here is a bit of a longer description of the data:</p>
+<p>The <a href="https://en.wikipedia.org/wiki/United_Nations_General_Assembly">UN General Assembly</a> is the main deliberative/policy-making/representative institution of the UN. From 1946 onwards, the countries (almost any country in the world) of the UN meet every year (in so called “sessions” that take a couple of months) to vote on recommendations on peace, economic development, disarmament, human rights, etc. Each country has one vote and can vote “yes”, “no”, or can “abstain” (roll call; see <code>rcid</code>). In each year (session-year), multiple issues are voted upon on several occasions (see variable <code>date</code>). The broader issue category is measured by the variable <code>issue</code>.</p>
 <p>Source: <a href="https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-03-23/readme.md">tidytuesday</a>.</p>
+</div>
+<div id="loading-the-data" class="section level1">
+<h1>Loading the Data</h1>
+<p>In a first step, we import the data. Thanks to the <a href="https://github.com/leeper/rio"><code>rio</code></a> package, this is super easy. You don`t have to be afraid of missing anything because you stick to this comfort wrapper. It’s just data importing; you don’t need to memorize 5 or more packages when you can learn one in the beginning. I also use this package all the time.</p>
+<p>Our data is stored as a <code>.parquet</code> file and is not exactly small with almost 1 million observations. The <code>.csv</code> would’ve had 200 mb while <code>.parquet</code> is under 1mb. The power of compression.</p>
+<pre class="r"><code>unvotes &lt;- rio::import(here(&quot;Data&quot;, &quot;unvotes.parquet&quot;))</code></pre>
+<p>A note on the “here” package:</p>
+<p>We use R projects to organize our analysis. This is nice, as clicking on the <code>.rproj</code> file initializes an R project which sets the working directory to the project root (the place where the <code>.rproj</code> file lives in). We can then use relative file paths to point R to the files we want to import/use in our script.</p>
+<p>However, when you work across different operating systems (e.g., Windows and Mac), relative file paths won’t work properly. Moreover, <code>.Rmd</code> files such as the one here won’t work with relative file paths when you knit the document (via the blue button above). This is because they set the knitting directory to the folder where the file is placed by default. You can reset this default via:</p>
+<pre class="r"><code>knitr::opts_knit$set(root.dir = normalizePath(&#39;../&#39;)) # for windows.</code></pre>
+<p>Because all of this, the <code>here</code> package exists. It makes relative file paths <strong>just work.</strong></p>
+<p>So instead of passing a relative file path to the file importing function of your choice, you wrap it into the <code>here()</code> function. Inside the function (starting from the project root, see example above), you simply pass the folder (and sub-folders if they exists) and the file name as strings separated by commas. Easy and robust!</p>
 </div>
 <div id="task-1" class="section level1">
 <h1>Task 1</h1>
 <p>Familiarize yourself with the data. What’s each variable’s type/class?</p>
 <p>What is the level of observation of this data set?</p>
+<ul>
+<li>Your Answer:</li>
+</ul>
 <p>Is this data set tidy?</p>
+<ul>
+<li>Your Answer:</li>
+</ul>
 </div>
 <div id="task-2" class="section level1">
 <h1>Task 2</h1>
+<div id="a-pipes" class="section level2">
+<h2>a) Pipes</h2>
+<p>I generate some random data:</p>
+<pre class="r"><code># generate 10000 random observations drawn from a normal distribution (mean = 0, sd = 1.
+x &lt;- rnorm(10000) </code></pre>
+<p>Re-write the following code with a pipe:</p>
+<pre class="r"><code># 1: 
+
+# Kernel density plot made via Base R&#39;s plotting functions for your understanding.
+# Base R&#39;s plotting functions are pretty mediocre, though. We will learn a better way soon: ggplot2.
+plot(density((x)))
+
+# 2:
+
+round(log(sqrt(abs(exp(x)))))
+
+# 3:
+
+# Pipe out 1 instead of x this time.
+
+round(x, digits = 1)</code></pre>
+<p>Your Answer:</p>
+</div>
+<div id="b-filter" class="section level2">
+<h2>b) filter()</h2>
+<p>Filter the <code>unvotes</code> data frame such that you obtain observations only from the US. Bind the resulting object to a new name <code>unvotes_us</code> (this would be the accurate way of phrasing assignment. For simplicity you can also read this as “create a new object named <code>unvotes_us</code>”). Do this with <strong>AND</strong> without pipes!</p>
+<p>Also, make the <code>data.frame</code> a <code>tibble</code> and print it to the console.</p>
+<p>Note: If you need help, consult the slides or the help files via <code>?FUNCTIONNAME</code>. Check if you understood data masking.</p>
+</div>
+<div id="c-summarise" class="section level2">
+<h2>c) summarise()</h2>
+<p>Using <code>unvotes_us</code>, “collapse” the data to a tibble showing the number of “yes” votes (pooled over all years). For a hint, scroll to the bottom of this document.</p>
+</div>
+<div id="d-mutate" class="section level2">
+<h2>d) mutate()</h2>
+<p>“Overwrite” <code>unvotes_us</code> and create a new variable <code>year</code> holding the year of the roll call.</p>
+</div>
+<div id="e-select-and-arrange" class="section level2">
+<h2>e) select() and arrange()</h2>
+<p>Select the <code>year</code>, the <code>rcid</code>, the <code>descr</code> variable, and the <code>issue</code> variable and sort the tibble by <code>issue</code>.</p>
+<p>Select everything but the <code>year</code> variable (Hint: read the select help file; there is a very short way to do this!).</p>
+</div>
+<div id="f-group_by" class="section level2">
+<h2>f) group_by()</h2>
+<p>Take the entire data frame and create a new variable that holds, for each country, the number of yes votes. Tip: to check if this worked fine, <code>arrange()</code> by country.</p>
+</div>
+</div>
+<div id="task-3" class="section level1">
+<h1>Task 3</h1>
 <div id="a" class="section level2">
 <h2>a)</h2>
 <p>With</p>
@@ -445,8 +513,8 @@ Palestinian conflict
 <p>Which issue category has the highest share of important votes?</p>
 </div>
 </div>
-<div id="task-3" class="section level1">
-<h1>Task 3</h1>
+<div id="task-4" class="section level1">
+<h1>Task 4</h1>
 <div id="a-1" class="section level2">
 <h2>a)</h2>
 <p>Add variables that show, for each country, the number and share of “yes”, “no”, and “abstain” votes, pooled over all years. Additionally, put out a tibble/data frame with one row for each country and these new variables.</p>
@@ -462,8 +530,9 @@ Palestinian conflict
 </div>
 <div id="hints" class="section level1">
 <h1>Hints:</h1>
-<p>Task 2a: <code>distinct()</code> may be helpful here!</p>
-<p>Task 2b: Check out the arguments of <code>distinct()</code>!</p>
+<p>Task 2c: You also need <code>filter()</code> and <code>n()</code> for this.</p>
+<p>Task 3a: <code>distinct()</code> may be helpful here!</p>
+<p>Task 3b: Check out the arguments of <code>distinct()</code>!</p>
 </div>
 
 
