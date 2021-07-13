@@ -1,5 +1,5 @@
 ---
-title: "Session 4: Data Viz Challenge"
+title: "Session 5: Data Viz Challenge"
 subtitle: Data Viz Challenge
 author: Your Name
 date: "`r format(Sys.time(), '%d %B %Y')`"
