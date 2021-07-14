@@ -153,7 +153,6 @@ parlgov_elec_de %>% # add, e.g., _de if we want to keep our original df
   pull(vote_share) %>% 
   mean()
 
-
 # summarise() ------------------------------------------------------------------
 
 parlgov_elec_de %>%
