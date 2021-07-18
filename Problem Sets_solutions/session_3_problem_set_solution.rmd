@@ -1,0 +1,442 @@
+---
+title: "Session 3: Problem Set"
+subtitle: Data Wrangling I
+author: Solution
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    keep_md: false
+    code_folding: show
+    theme: yeti
+    highlight: textmate
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+# Uncomment below to produce .pdf
+#   pdf_document:
+#     latex_engine: xelatex
+#     keep_tex: false ## Change to true if want keep intermediate .tex file
+#     toc: true
+#     toc_depth: 3
+#     dev: cairo_pdf
+# knit: (function(inputFile, encoding) {
+#  rmarkdown::render(inputFile, encoding = encoding,
+#  output_format = 'all')
+#  })
+---
+
+```{r setup, include=FALSE}
+# install package management tool pacman
+# install.packages("pacman")
+
+pacman::p_load(
+  tidyverse,
+  rio,
+  modelsummary,
+  knitr,
+  here,
+  arrow
+)
+
+```
+
+
+```{r, include=FALSE}
+
+knitr::opts_knit$set(root.dir = normalizePath('../'))
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+
+# Data Wrangling UN Votes
+
+In this problem set, we will use data from the [unvotes](https://github.com/dgrtwo/unvotes)
+package. It contains data for all countries voting history in the general assembly.
+
+Here is a description of the data set:
+
+| variable      | description                                                                                                                                                              |
+|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| rcid          | The roll call id; An identifier for each vote; used to join with un_votes and un_roll_call_issues                                                                                                     |
+| country       | Country name, by official English short name                                                                                                                             |
+| country_code  | 2-character ISO country code                                                                                                                                             |
+| vote          | Vote result as a factor of yes/abstain/no                                                                                                                                |
+| session       | Session number. The UN holds one session per year; these started in 1946                                                                                                 |
+| importantvote | Whether the vote was classified as important by the  U.S. State Department report "Voting Practices in the United Nations".  These classifications began with session 39 |
+| date          | Date of the vote, as a Date vector                                                                                                                                       |
+| unres         | Resolution code                                                                                                                                                          |
+| amend         | Whether the vote was on an amendment; coded only until 1985                                                                                                              |
+| para          | Whether the vote was only on a paragraph and not a resolution; coded only until 1985                                                                                     |
+| short         | Short description                                                                                                                                                        |
+| descr         | Longer description                                                                                                                                                       |
+| short_name    | Two-letter issue codes                                                                                                                                                   |
+| issue         | Descriptive issue name, 6 issues                                                                                                                                                   |
+
+It's panel data (/time-series cross-sectional data/longitudinal data). That is, we observe our observational units, in this case countries, over time.
+
+For non-political scientists, here is a bit of a longer description of the data:
+
+The [UN General Assembly](https://en.wikipedia.org/wiki/United_Nations_General_Assembly) is the main deliberative/policy-making/representative institution of the UN. From 1946 onwards, the countries (almost any country in the world) of the UN meet every year (in so called "sessions" that take a couple of months) to vote on recommendations on peace, economic development, disarmament, human rights, etc. Each country has one vote and can vote "yes", "no", or can "abstain" (roll call; see `rcid`). In each year (session-year), multiple issues are voted upon on several occasions (see variable `date`). The broader issue category is measured by the variable `issue`.
+
+Source: [tidytuesday](https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-03-23/readme.md).
+
+# Loading the Data
+
+In a first step, we import the data. Thanks to the [`rio`](https://github.com/leeper/rio) package, this is super easy.
+You don`t have to be afraid of missing anything because you stick to this comfort wrapper. It's just data importing; you don't need to memorize 5 or more packages when you can learn one in the beginning. I also use this package all the time.
+
+Our data is stored as a `.parquet` file and is not exactly small with almost 1 million observations. The `.csv` would've had 200 mb while `.parquet` is under 1mb. The power of compression.
+
+
+```{r}
+
+unvotes <- rio::import(here("Data", "unvotes.parquet"))
+
+```
+
+A note on the "here" package:
+
+We use R projects to organize our analysis. This is nice, as clicking on the `.rproj` file initializes an R project which sets the working directory to the project root (the place where the `.rproj` file lives in). We can then use relative file paths to point R to the files we want to import/use in our script. 
+
+However, when you work across different operating systems (e.g., Windows and Mac), relative file paths won't work properly. Moreover, `.Rmd` files such as the one here won't work with relative file paths when you knit the document (via the blue button above). This is because they set the knitting directory to the folder where the file is placed by default. You can reset this default via:
+
+```{r, eval = FALSE}
+knitr::opts_knit$set(root.dir = normalizePath('../')) # for windows.
+```
+
+Because all of this, the `here` package exists. It makes relative file paths **just work.**
+
+So instead of passing a relative file path to the file importing function of your choice, you wrap it into the `here()` function. Inside the function (starting from the project root, see example above), you simply pass the folder (and sub-folders if they exists) and the file name as strings separated by commas. Easy and robust!
+
+
+# Task 1
+
+
+Familiarize yourself with the data. What's each variable's type/class?
+
+
+```{r}
+str(unvotes)
+glimpse(unvotes)
+```
+
+
+What is the level of observation of this data set?
+
+- Your Answer: 
+
+Is this data set tidy?
+
+- Your Answer: 
+
+# Task 2
+
+## a) Pipes
+
+I generate some random data:
+
+```{r}
+# generate 10000 random observations drawn from a normal distribution (mean = 0, sd = 1.
+x <- rnorm(10000) 
+```
+
+
+Re-write the following code with a pipe:
+
+```{r, eval = FALSE}
+
+# 1: 
+
+# Kernel density plot made via Base R's plotting functions for your understanding.
+# Base R's plotting functions are pretty mediocre, though. We will learn a better way soon: ggplot2.
+plot(density((x)))
+
+# 2:
+
+round(log(sqrt(abs(exp(x)))))
+
+# 3:
+
+# Pipe out 1 instead of x this time.
+
+round(x, digits = 1)
+```
+
+Your Answer:
+
+```{r}
+# 1: 
+
+x %>% 
+  density %>% 
+  plot()
+
+# 2:
+
+x %>% 
+  exp() %>% 
+  abs() %>% 
+  sqrt() %>% 
+  log() %>% 
+  round() %>% 
+  head()
+  
+# 3: 
+
+1 %>% 
+  round(x, digits = .) %>% 
+  head()
+
+```
+
+
+## b) filter()
+
+Filter the `unvotes` data frame such that you obtain observations only from the US. Bind the resulting object to a new name `unvotes_us` (this would be the accurate way of phrasing assignment. For simplicity you can also read this as "create a new object named `unvotes_us`"). Do this with **AND** without pipes!
+
+Also, make the `data.frame` a `tibble` and print it to the console.
+
+Note: If you need help, consult the slides or the help files via `?FUNCTIONNAME`. Check if you understood data masking. 
+
+
+```{r}
+
+unvotes_us <- unvotes %>% 
+  filter(country == "United States") %>% 
+  as_tibble()
+
+unvotes_us <- as_tibble(filter(unvotes, country == "United States"))
+
+unvotes_us
+```
+
+## c) summarise()
+
+Using `unvotes_us`, "collapse" the data to a tibble showing the number of "yes" votes (pooled over all years). For a hint, scroll to the bottom of this document.
+
+```{r}
+unvotes_us %>% 
+  filter(vote == "yes") %>% 
+  summarise(n_yes = n())
+```
+
+## d) mutate()
+
+"Overwrite" `unvotes_us` and create a new variable `year` holding the year of the roll call. 
+
+```{r}
+unvotes_us <- unvotes_us %>% 
+  mutate(year = lubridate::year(date))
+```
+
+## e) select() and arrange()
+
+Select the `year`, the `rcid`, the `descr` variable, and the `issue` variable and sort the tibble by `issue`.
+
+```{r}
+unvotes_us %>% 
+  select(year, rcid, descr, issue) %>% 
+  arrange(issue)
+```
+
+Select everything but the `year` variable (Hint: read the select help file; there is a very short way to do this!).
+
+```{r}
+unvotes_us %>% 
+  select(-year)
+
+unvotes_us %>% 
+  select(!year)
+```
+
+## f) group_by()
+
+Take the entire data frame and create a new variable that holds, for each country, the number of yes votes. Tip: to check if this worked fine, `arrange()` by country. 
+
+```{r}
+unvotes <- unvotes %>% 
+  group_by(country) %>% 
+  mutate(yes_votes = sum(vote == "yes", na.rm = TRUE)) %>% 
+  arrange(country)
+unvotes
+```
+ 
+
+# Task 3
+
+## a)
+
+With
+```{r}
+datasummary_skim(unvotes$issue, type = "categorical")
+```
+you get a quick summary for the categorical issue variable.
+
+However, as each `rcid` occurs multiple times for each country, the issues are, of course, also repeatedly present in our data.
+
+What we want is a **sorted** table for the distribution of our issue variable 
+over all roll calls.
+
+Create such table/tibble/data frame using **only** tidyverse verbs/functions (scroll to the bottom of this document if you need a hint).
+
+```{r}
+
+# There are several different ways we can achieve this:
+
+# 1. E.g. using count() which is a shorthand for group_by(x) %>% summarise(n = n())
+
+# count() returns a tibble of the form
+
+# >        x        n
+# >    <chr>    <int>
+# >  1     A       35
+
+# So we can just add a column to this computing the relative frequency:
+unvotes %>%
+  distinct(rcid, issue) %>%
+  count(issue) %>%
+  mutate(percent = round(100 * n / sum(n), 1)) %>% # sum() of the n vector/variable
+  arrange(desc(percent))
+
+# Another way:
+
+unvotes %>%
+  distinct(rcid, issue) %>%
+  group_by(issue) %>%
+  summarise(n = n()) %>% 
+  mutate(percent = round(100 * n / sum(n), 1)) %>%
+  arrange(desc(percent))
+
+# Yet another way
+
+unvotes %>%
+  distinct(rcid, issue) %>%
+  group_by(issue) %>%
+  transmute(n = n()) %>%
+  unique() %>%
+  ungroup() %>%
+  mutate(percent = round(100 * n / sum(n), 1)) %>%
+  arrange(desc(percent))
+
+```
+
+## b) 
+
+Which issue category has the highest share of important votes?
+
+```{r}
+unvotes %>%
+  distinct(rcid, issue, .keep_all = T) %>%
+  group_by(issue) %>%
+  summarise(votes = n(), 
+  imp_votes = sum(importantvote, na.rm = TRUE), 
+  share_imp = sum(importantvote, na.rm = TRUE) / n()) %>%
+  arrange(desc(share_imp))
+  
+```
+
+# Task 4
+
+
+## a) 
+
+Add variables that show, for each country, the number and share of "yes", "no", and "abstain" votes, 
+pooled over all years. Additionally, put out a tibble/data frame with one row for each country and these new variables. 
+
+```{r}
+# First, add the variables (this is a bit cumbersome; we will learn case_when in the next session):
+
+unvotes <- unvotes %>%
+  group_by(country) %>%
+  mutate(yes_votes = sum(vote == "yes"),
+         no_votes = sum(vote == "no"),
+         abstain_votes = sum(vote == "abstain"),
+         pct_yes = sum(vote == "yes", na.rm = T)/n(),
+         pct_no = sum(vote == "no", na.rm = T)/n(),
+         pct_abs = sum(vote == "abstain", na.rm = T)/n())
+
+# Next, compute a summary table
+
+sum_tab_a <- unvotes %>%  # or use mean()
+  distinct(country, .keep_all = TRUE) %>%
+  select(country, yes_votes, no_votes, abstain_votes, pct_yes, pct_no, pct_abs)
+sum_tab_a
+
+# OR
+
+sum_tab_a_1 <- unvotes %>%
+  group_by(country) %>%
+  summarise(
+    pct_yes = sum(vote == "yes", na.rm = T) / n(),
+    pct_no = sum(vote == "no", na.rm = T) / n(),
+    pct_abs = sum(vote == "abstain", na.rm = T) / n()
+  )
+sum_tab_a_1
+
+# OR, better to read (for single countries), but no "wide" format:
+
+sum_tab_a_2 <- unvotes %>%
+  group_by(country, vote) %>%
+  count(country, vote) %>% 
+  group_by(country) %>% 
+  mutate(percent = n/sum(n))
+  
+sum_tab_a_2
+
+```
+
+## b) 
+
+Calculate, for each country and issue, the number and share of "yes" votes but 
+only for "important votes" and for the [permanent members](https://www.un.org/securitycouncil/content/current-members) 
+of the security council. The output should have 30 rows.
+
+```{r}
+
+str(unvotes$importantvote)
+
+
+perm_members <- c("United States", "Russia", "France", "United Kingdom", "China")
+
+imp_votes_tab <- unvotes %>%
+  group_by(country, issue) %>%
+  filter(importantvote == 1, country %in% perm_members) %>%
+  summarise(
+    n_votes = n(),
+    pct_yes = sum(vote == "yes", na.rm = T) / n()
+  )
+imp_votes_tab
+
+```
+
+
+## c) 
+
+Get the years with the highest and lowest share of "yes" votes for 
+each country.
+
+
+```{r}
+
+max_min_tab <- unvotes %>%
+  filter(country %in% perm_members) %>%
+  group_by(year = lubridate::year(date), country) %>% # lubridate is not loaded by default
+  summarise(
+    n_votes = n(),
+    pct_yes = sum(vote == "yes", na.rm = T) / n()
+  ) %>%
+  ungroup() %>%
+  group_by(country) %>%
+  filter(pct_yes == max(pct_yes) | pct_yes == min(pct_yes)) %>%
+  arrange(country, desc(pct_yes))
+max_min_tab
+```
+
+
+# Hints:
+
+Task 2c: You also need `filter()` and `n()` for this.
+
+Task 3a: `distinct()` may be helpful here!
+
+Task 3b: Check out the arguments of `distinct()`!
