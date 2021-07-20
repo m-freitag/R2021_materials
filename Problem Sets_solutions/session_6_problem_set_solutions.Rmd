@@ -1,0 +1,197 @@
+---
+title: "Session 6: Problem Set"
+subtitle: Writing Functions
+author: Solution
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    keep_md: false
+    code_folding: show
+    theme: yeti
+    highlight: textmate
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+# Uncomment below to produce .pdf
+#   pdf_document:
+#     latex_engine: xelatex
+#     keep_tex: false ## Change to true if want keep intermediate .tex file
+#     toc: true
+#     toc_depth: 3
+#     dev: cairo_pdf
+# knit: (function(inputFile, encoding) {
+#  rmarkdown::render(inputFile, encoding = encoding,
+#  output_format = 'all')
+#  })
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+pacman::p_load(
+  tidyverse,
+  palmerpenguins,
+  purrr
+)
+
+```
+
+
+# Task 1
+
+Take the following vector:
+
+```{r}
+x <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+```
+
+Write a function that takes x as an argument and computes the sum of the elements 
+in the vector using a `for` loop. Test it against the `sum()` function.
+
+```{r}
+sum_for <- function(x) {
+  sum <- 0
+  for (i in 1:length(x)) {
+    sum <- sum + x[i]
+  }
+  return(sum)
+}
+  
+sum_for(x)
+
+sum(x)
+```
+
+
+# Task 2
+
+We now turn towards a relatively easy problem that is often asked as a warm-up in coding interviews.
+
+> Write a function that takes an integer number as an argument and puts out the word
+"fizz" or "buzz" up to that integer. If an integer is divisible by 3, the function
+should put out "fizz". If it is divisible by 5, the function should put out "buzz". If
+it is divisible by both 3 and 5, the function should put out "fizzbuzz". If none of the
+above holds true, the function should simply return the integer as a string.
+
+In a first step, do this using a `for` loop and `if` statements. 
+If you do not provide an integer number, the function should throw a meaningfull error message.
+
+Tip: remember the modulo operator! 
+
+```{r, error = TRUE}
+
+fizzbuzz <- function(int = NULL) {
+  
+  if (is.numeric(int) == FALSE) {
+    stop("Please provide an integer number.")
+  }
+  else if (int %% 1 != 0) {
+    stop("Please provide an integer number.")
+  }
+  else {
+
+  output <- vector(mode = "integer", length(1:int))
+
+  for (i in 1:int) {
+    if (i %% 3 == 0 && i %% 5 == 0) {
+      output[i] <- "fizzbuzz"
+    }
+    else if (i %% 3 == 0) {
+      output[i] <- "fizz"
+    }
+    else if (i %% 5 == 0) {
+      output[i] <- "buzz"
+    }
+    else {
+      output[i] <- i
+    }
+  }
+  return(output)
+  }
+}
+
+fizzbuzz(50)
+fizzbuzz("3")
+fizzbuzz(3.3)
+fizzbuzz(TRUE)
+
+```
+
+
+# Task 3
+
+Use `map()` from the `purrr` package to apply the `class()` and `typeof()` function
+to each column of the palmerpenguins package.
+
+```{r}
+penguins %>% map(typeof)
+
+penguins %>% map_chr(typeof)
+penguins %>% map_chr(class)
+```
+
+
+ADVANCED TASK (skip if you are stuck):
+
+Use `map_df` to compute a data frame consisting of variables showing the class and type 
+of each column of the penguins data and a variable storing the column names of the penguins data.
+
+Tip: You need to use `data.frame()` inside `map_df()` and create the variable you 
+want inside this `data.frame()` call. Further, look into 
+the `.id` argument of map to get the column names of the penguin data set.
+
+```{r}
+
+# Compare
+
+penguins %>% map(~ data.frame(
+  type = typeof(.x),
+  class = class(.x)
+),
+.id = "variable"
+)
+
+# to
+
+penguins %>% map_df(~ data.frame(
+  type = typeof(.x),
+  class = class(.x)
+),
+.id = "variable"
+)
+
+```
+
+# Task 4
+
+Take the function you defined in Task 2 and rewrite it such that it takes a vector 
+of integers instead and works with `purrr::map_chr()`.
+
+```{r}
+fizzbuzz <- function(int = NULL) {
+  if (is.numeric(int) == FALSE) {
+    stop("Please provide an integer number.")
+  }
+  else if (int %% 1 != 0) {
+    stop("Please provide an integer number.")
+  }
+  else {
+      if (int %% 3 == 0 && int %% 5 == 0) {
+        "fizzbuzz"
+      }
+      else if (int %% 3 == 0) {
+        "fizz"
+      }
+      else if (int %% 5 == 0) {
+        "buzz"
+      }
+      else {
+       int
+      }
+  }
+}
+
+purrr::map_chr(1:50, fizzbuzz)
+
+```

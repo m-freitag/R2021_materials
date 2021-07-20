@@ -1,0 +1,151 @@
+---
+title: "Session 5: Data Viz Challenge"
+subtitle: Solution
+author: Your Name
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    keep_md: false
+    code_folding: show
+    theme: yeti
+    highlight: textmate
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+# Uncomment below to produce .pdf
+#   pdf_document:
+#     latex_engine: xelatex
+#     keep_tex: false ## Change to true if want keep intermediate .tex file
+#     toc: true
+#     toc_depth: 3
+#     dev: cairo_pdf
+# knit: (function(inputFile, encoding) {
+#  rmarkdown::render(inputFile, encoding = encoding,
+#  output_format = 'all')
+#  })
+---
+
+```{r setup, include=FALSE}
+# install package management tool pacman
+# install.packages("pacman")
+
+pacman::p_load(
+  tidyverse,
+  rio,
+  modelsummary,
+  patchwork,
+  hrbrthemes,
+  extrafont,
+  RColorBrewer,
+  here
+)
+
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+# Data Viz Challenge
+
+
+```{r}
+whogov <- import(here("Data", "WhoGov_crosssectional_V1.2.csv"))
+```
+
+Since data visualization is about creativity and just trying things out,
+we will take a different approach in this problem set. 
+
+Together with your group you will work on the [WhoGov](https://politicscentre.nuffield.ox.ac.uk/whogov-dataset/) data set. 
+It provides information on governing elites. 
+
+1. **Everyone on her/his own (5min):** Skim the [codebook](https://politicscentre.nuffield.ox.ac.uk/media/4117/whogov_codebook.pdf)
+part **B**. We will **only use the cross-sectional data**.
+
+2. **Together in your group (10min):** Discuss the data and agree on something
+interesting you want to visualize. 
+
+3. **Everyone on her/his own (30mins):** Implement the visualization you agreed
+ upon in R. Tipp: You can use all the links and pointers from the slides or google
+ when you are stuck!
+
+4. **Together in your group (15mins):** Share your versions with your group. Pick the best and fine-tune it together. If
+you like multiple versions, combine them into one plot/data story.
+
+
+Back in the plenum, we will pick a winner!
+
+Criteria:
+
+- Is it a truthful display of the data?
+- Is it functional?
+- Is it pretty?
+- Is it insightful?
+
+
+# An exemplary "Solution"
+
+Visualizing the share of female ministers over time by system type.
+
+```{r, fig.width = 12, fig.height = 5}
+
+# Define a ggplot theme
+
+extrafont::loadfonts() # You must download and install IBM Plex from google fonts and register it with extrafont. Consult the package doc.
+
+plex <- theme_ipsum() +
+  theme(
+    text = element_text(colour = "#415564", family = "IBM Plex Sans"),
+    plot.title = element_text(colour = "#415564", family = "IBM Plex Sans"),
+    plot.subtitle = element_text(colour = "#415564", family = "IBM Plex Sans"),
+    plot.background = element_rect(fill = "#ffffff", color = "#ffffff"),
+    panel.border = element_blank(),
+    strip.text = element_text(colour = "#415564"),
+    axis.text = element_text(colour = "#415564"),
+    axis.title = element_text(colour = "#415564")
+  )
+
+theme_set(plex)
+
+
+# Create a crosstab of the system_category and arrange by n
+
+whogov %>%
+  count(system_category) %>%
+  arrange(n)
+
+# Add a variable "regime_type" that takes on the value "democratic" if system_category
+# contains the string "democ", "Dictatorship" if "dict", and "Other" otherwise.
+
+whogov <- whogov %>%
+  mutate(regime_type = case_when(
+    stringr::str_detect(system_category, "dict") ~ "Dictatorship",
+    stringr::str_detect(system_category, "democ") ~ "Democracy",
+    TRUE ~ "Other"
+  ))
+
+# Create a crosstab of the system_category and regime_type
+
+whogov %>%
+  count(system_category, regime_type) %>%
+  arrange(n)
+
+
+plot_table <- whogov %>%
+  mutate(share_fem_min = n_female_minister / n_minister) %>%
+  group_by(year, regime_type) %>%
+  summarise(avg_share_fem_minister = mean(share_fem_min, na.rm = TRUE)) %>%
+  filter(regime_type != "Other") 
+  
+ggplot(plot_table, aes(x = year, y = avg_share_fem_minister, color = regime_type)) +
+  geom_line() +
+  geom_line(size = 1) +
+  scale_colour_brewer(palette = "Dark2") +
+  scale_x_continuous(breaks = seq(1960, 2020, 10)) +
+  labs(
+    x = "\nYear",
+    y = "Share of \nFemale Ministers",
+    color = "Regime Type (excluding 'Other')",
+    title = "Share of Female Ministers in Democracies and Dictatorships over Time\n",
+    caption = "Data from WhoGov (Nyrup/Bramwell 2021)."
+  ) +
+  theme(axis.title.y = element_text(angle = 0)) # rotate y axis label.
+
+```
